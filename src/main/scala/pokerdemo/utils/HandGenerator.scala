@@ -93,7 +93,9 @@ object HandGenerator {
       cardValue => straight += Card(getRandomSuit(), cardValue)
     }
 
-    straight.toList
+    val randomCard = Card(Suit.Hearts, 4)
+    val randomCard2 = Card(Suit.Diamonds, 10)
+    straight.toList ::: randomCard :: randomCard2 :: Nil
   }
 
   def getFullHouse(): List[Card] = {

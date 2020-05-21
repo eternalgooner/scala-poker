@@ -190,20 +190,33 @@ object CardUtils {
     }
   }
 
-  def checkForStraight(cards: List[Card]):List[Card] = {
-    println(s"\nchecking for Straight with $cards")
-    if (cards.size < 5) return List()
+  //TODO straight bug
+  //when 5,6,7,8 10,11,12 returns true
 
+  def getPossibleStraightSubsets(xs: List[Int]):List[List[Int]] = {
+    val subset1 = xs.slice(0,5)
+    val subset2 = xs.slice(1,6)
+    val subset3 = xs.slice(2,7)
+
+    List(subset1, subset2, subset3)
+  }
+
+  def checkForStraight (cards: List[Card]):List[Card] = {
+    if (cards.size < 6) return List()
     val sortedDistinctValues = cards.map(_.value.id).distinct.sorted
-    println(s"sorted distinct values: $sortedDistinctValues")
+    val subsets = getPossibleStraightSubsets(sortedDistinctValues)
 
-    val isStraight = sortedDistinctValues.sliding(2).count(a => a(0)+1 == a(1))
-    println(s"isStraight: $isStraight")
+    //check for 4 consecutive incremental numbers after 1st num
+    val isStraight: List[List[Int]] = for {
+      subset <- subsets
+      consecutiveIncrements = subset.sliding(2).count(a => a(0)+1 == a(1))
+      if consecutiveIncrements == 4
+    } yield subset
 
-    isStraight match {
-      case count if count == 4  => cards
-      case _                    => List()
-    }
+    //isStraight.flatten
+    if (isStraight.flatten.nonEmpty) {
+      cards.filter(!isStraight.flatten.contains(_) )
+    }else List()
   }
 
   def checkForFourOfAKind(cards: List[Card]):List[Card] = {

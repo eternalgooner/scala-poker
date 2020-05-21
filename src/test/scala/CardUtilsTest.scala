@@ -1,6 +1,7 @@
-import org.scalatest.{FlatSpec, FunSuite, Matchers}
-import pokerdemo.model.{Card, CardValue, Flush, FourOfAKind, FullHouse, HighCard, Pair, RoyalFlush, Straight, StraightFlush, Suit, ThreeOfAKind}
-import pokerdemo.utils.{CardUtils, HandGenerator}
+import org.scalatest.{FlatSpec, Matchers}
+import pokerdemo.model._
+import pokerdemo.utils.CardUtils
+import pokerdemo.utils.HandGenerator._
 
 import scala.util.Random
 
@@ -11,7 +12,7 @@ import scala.util.Random
 class CardUtilsTest extends FlatSpec with Matchers{
 
   "A Royal Flush hand" should "be of type RoyalFlush" in {
-    val royalFlush: List[Card] = HandGenerator.getRoyalFlush(HandGenerator.getRandomSuit())
+    val royalFlush: List[Card] = getRoyalFlush(getRandomSuit())
     val validatedRoyalFlush = CardUtils.getBestHand(royalFlush)
     println(s"Royal Flush: $validatedRoyalFlush")
 
@@ -20,7 +21,7 @@ class CardUtilsTest extends FlatSpec with Matchers{
   }
 
   "A Royal Flush hand" should "contain only Face cards" in {
-    val royalFlush: List[Card] = HandGenerator.getRoyalFlush(HandGenerator.getRandomSuit())
+    val royalFlush: List[Card] = getRoyalFlush(getRandomSuit())
     val validatedRoyalFlush = CardUtils.getBestHand(royalFlush)
     println(s"Royal Flush: $validatedRoyalFlush")
 
@@ -30,7 +31,7 @@ class CardUtilsTest extends FlatSpec with Matchers{
   }
 
   "A Straight Flush hand" should "be of type StraightFlush" in {
-    val straightFlush: List[Card] = HandGenerator.getStraightFlushStartingFrom(randomStartingStraightValue)
+    val straightFlush: List[Card] = getStraightFlushStartingFrom(randomStartingStraightValue)
     val validatedStraightFlush = CardUtils.getBestHand(straightFlush)
     println(s"Straight: $validatedStraightFlush")
 
@@ -38,7 +39,7 @@ class CardUtilsTest extends FlatSpec with Matchers{
   }
 
   "A Four of a Kind hand" should "be of type FourOfAKind" in {
-    val fourOfAKind: List[Card] = HandGenerator.getFourOfAKind()
+    val fourOfAKind: List[Card] = getFourOfAKind()
     val validatedFourOfAKind = CardUtils.getBestHand(fourOfAKind)
     println(s"Four of a Kind: $validatedFourOfAKind")
 
@@ -46,7 +47,7 @@ class CardUtilsTest extends FlatSpec with Matchers{
   }
 
   "A Full House hand" should "be of type FullHouse" in {
-    val fullHouse: List[Card] = HandGenerator.getFullHouse()
+    val fullHouse: List[Card] = getFullHouse()
     val validatedFullHouse = CardUtils.getBestHand(fullHouse)
     println(s"Full House: $validatedFullHouse")
 
@@ -54,7 +55,7 @@ class CardUtilsTest extends FlatSpec with Matchers{
   }
 
   "A Flush hand" should "be of type Flush" in {
-    val flush: List[Card] = HandGenerator.getFlush(HandGenerator.getRandomSuit())
+    val flush: List[Card] = getFlush(getRandomSuit())
     val validatedFlush = CardUtils.getBestHand(flush)
     println(s"Flush: $validatedFlush")
 
@@ -62,18 +63,33 @@ class CardUtilsTest extends FlatSpec with Matchers{
   }
 
   "A Straight hand" should "be of type Straight" in {
-    val straight: List[Card] = HandGenerator.getStraightStartingFrom(randomStartingStraightValue)
+    val straight: List[Card] = getStraightStartingFrom(randomStartingStraightValue)
     val validatedStraight = CardUtils.getBestHand(straight)
     println(s"Straight: $validatedStraight")
 
     assert(validatedStraight.isInstanceOf[Straight])
   }
 
-  //straight bug
-  //when 5,6,7,8 10,11
+  "A Non Straight hand" should "be of type HighCard" in {
+    val nonStraight: List[Card] = List(
+      Card(Suit.Spades, 3),
+      Card(Suit.Clubs, 4),
+      Card(Suit.Diamonds, 5),
+      Card(Suit.Hearts, 6),
+      Card(getRandomSuit(), 8),
+      Card(getRandomSuit(), 9),
+      Card(getRandomSuit(), 10),
+    )
+    val validatedStraight = CardUtils.getBestHand(nonStraight)
+
+    assert(validatedStraight.isInstanceOf[HighCard])
+  }
+
+  //TODO low straight bug - create test
+  //when A,2,3,4 5,11,12
 
   "A Three of a Kind hand" should "be of type ThreeOfAKind" in {
-    val threeOfAKind: List[Card] = HandGenerator.getThreeOfAKind()
+    val threeOfAKind: List[Card] = getThreeOfAKind()
     val validatedThreeOfAKind = CardUtils.getBestHand(threeOfAKind)
     println(s"Three of a Kind: $validatedThreeOfAKind")
 
@@ -81,7 +97,7 @@ class CardUtilsTest extends FlatSpec with Matchers{
   }
 
   "A Two of a Kind hand" should "be of type TwoOfAKind" in {
-    val twoOfAKind: List[Card] = HandGenerator.getTwoOfAKind()
+    val twoOfAKind: List[Card] = getTwoOfAKind()
     val validatedTwoOfAKind = CardUtils.getBestHand(twoOfAKind)
     println(s"Two of a Kind: $validatedTwoOfAKind")
 
@@ -89,7 +105,7 @@ class CardUtilsTest extends FlatSpec with Matchers{
   }
 
   "A High Card hand" should "be of type HighCard" in {
-    val highCard: List[Card] = HandGenerator.getHighCard()
+    val highCard: List[Card] = getHighCard()
     val validatedHighCard = CardUtils.getBestHand(highCard)
     println(s"High Card: $validatedHighCard")
 
@@ -97,7 +113,7 @@ class CardUtilsTest extends FlatSpec with Matchers{
   }
 
   "All Face cards" should "be considered a Face card" in {
-    val allCardValues: List[Card] = HandGenerator.getAllCardValues()
+    val allCardValues: List[Card] = getAllCardValues()
 
     val result = allCardValues.filter(CardUtils.isFaceCard(_))
     assert(result.size === 5)
