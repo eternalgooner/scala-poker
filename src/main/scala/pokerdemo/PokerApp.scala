@@ -33,20 +33,32 @@ object PokerApp extends App {
     //deal cards
     val gameStateAfterDeal = gameState.dealCardsToPlayers(gameState)
 
+    println("\nhow much would you like to bet?")
+    val bet1 = readLine("bet amount?")
+
     //deal the flop
     val gameStateAfterFlop = gameState.dealFlop(gameStateAfterDeal)
+
+    println("\nhow much would you like to bet?")
+    val bet2 = readLine("bet amount?")
 
     //deal the turn
     val gameStateAfterTurn = gameState.dealTurn(gameStateAfterFlop)
 
+    println("\nhow much would you like to bet?")
+    val bet3 = readLine("bet amount?")
+
     //deal the river
     val gameStateAfterRiver = gameState.dealRiver(gameStateAfterTurn)
+
+    println("\nhow much would you like to bet?")
+    val bet4 = readLine("bet amount?")
 
     //check who won
     val finalGameState = gameState.calculateWinner(gameStateAfterRiver)
 
-    println("\ndo you want to play again?")
-    val choice = readLine("\ny or n?")
+    println("\ndo you want to play again?\n")
+    val choice = readLine("y or n?")
 
     //play again?
     choice match {

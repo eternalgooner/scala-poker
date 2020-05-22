@@ -38,3 +38,6 @@ val result2 = checkForStraight(cards2)
 val result3 = checkForStraight(cards3)
 val result4 = checkForStraight(cards4)
 val result5 = checkForStraight(cards5)
+
+val xs = List(2,3,4,5,6,8,9)
+val result10 = xs.sliding(5,1).toList

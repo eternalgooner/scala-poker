@@ -1,6 +1,7 @@
 import org.scalatest.{FlatSpec, Matchers}
+import pokerdemo.GameState
 import pokerdemo.model._
-import pokerdemo.utils.CardUtils
+import pokerdemo.utils.{CardUtils, HandGenerator}
 import pokerdemo.utils.HandGenerator._
 
 import scala.util.Random
@@ -38,6 +39,8 @@ class CardUtilsTest extends FlatSpec with Matchers{
     assert(validatedStraightFlush.isInstanceOf[StraightFlush])
   }
 
+  //TODO check for higher straight flush
+
   "A Four of a Kind hand" should "be of type FourOfAKind" in {
     val fourOfAKind: List[Card] = getFourOfAKind()
     val validatedFourOfAKind = CardUtils.getBestHand(fourOfAKind)
@@ -45,6 +48,9 @@ class CardUtilsTest extends FlatSpec with Matchers{
 
     assert(validatedFourOfAKind.isInstanceOf[FourOfAKind])
   }
+
+  //TODO test for higher full house
+  //e.g. 44455 vv 55522
 
   "A Full House hand" should "be of type FullHouse" in {
     val fullHouse: List[Card] = getFullHouse()
@@ -62,6 +68,8 @@ class CardUtilsTest extends FlatSpec with Matchers{
     assert(validatedFlush.isInstanceOf[Flush])
   }
 
+  //TODO check for higher flush
+
   "A Straight hand" should "be of type Straight" in {
     val straight: List[Card] = getStraightStartingFrom(randomStartingStraightValue)
     val validatedStraight = CardUtils.getBestHand(straight)
@@ -69,6 +77,8 @@ class CardUtilsTest extends FlatSpec with Matchers{
 
     assert(validatedStraight.isInstanceOf[Straight])
   }
+
+  //TODO check for higher straight
 
   "A Non Straight hand" should "be of type HighCard" in {
     val nonStraight: List[Card] = List(
@@ -87,6 +97,13 @@ class CardUtilsTest extends FlatSpec with Matchers{
 
   //TODO low straight bug - create test
   //when A,2,3,4 5,11,12
+  "An Ace Low Straight hand" should "be of type Straight" in {
+    val straight: List[Card] = getStraightStartingFrom(14)
+    val validatedStraight = CardUtils.getBestHand(straight)
+    println(s"Straight: $validatedStraight")
+
+    assert(validatedStraight.isInstanceOf[Straight])
+  }
 
   "A Three of a Kind hand" should "be of type ThreeOfAKind" in {
     val threeOfAKind: List[Card] = getThreeOfAKind()
@@ -96,6 +113,8 @@ class CardUtilsTest extends FlatSpec with Matchers{
     assert(validatedThreeOfAKind.isInstanceOf[ThreeOfAKind])
   }
 
+  //TODO check for higher 3 of a kind
+
   "A Two of a Kind hand" should "be of type TwoOfAKind" in {
     val twoOfAKind: List[Card] = getTwoOfAKind()
     val validatedTwoOfAKind = CardUtils.getBestHand(twoOfAKind)
@@ -103,6 +122,16 @@ class CardUtilsTest extends FlatSpec with Matchers{
 
     assert(validatedTwoOfAKind.isInstanceOf[Pair])
   }
+
+  "A Two Pair hand" should "be of type TwoPair" in {
+    val twoPair: List[Card] = getTwoPair()
+    val validatedTwoPair = CardUtils.getBestHand(twoPair)
+    println(s"Two Pair: $validatedTwoPair")
+
+    assert(validatedTwoPair.isInstanceOf[TwoPair])
+  }
+
+  //TODO check for higher 2 of a kind
 
   "A High Card hand" should "be of type HighCard" in {
     val highCard: List[Card] = getHighCard()
@@ -119,9 +148,46 @@ class CardUtilsTest extends FlatSpec with Matchers{
     assert(result.size === 5)
   }
 
+  "RoyalFlush" should "beat StraightFlush" in {
+    val playerHand = RoyalFlush(List())
+    val computerHand = StraightFlush(List())
+
+    val result = CardUtils.compareBestHands(playerHand, computerHand)
+    assert(result == 1)
+  }
+
+  "Pair" should "be equal to a Pair" in {
+    val playerHand = Pair(List())
+    val computerHand = Pair(List())
+
+    val result = CardUtils.compareBestHands(playerHand, computerHand)
+    assert(result == 0)
+  }
+
+  "Player High Card" should "beat computer lower card" in {
+    val playerHand = List(Card(getRandomSuit(), 4),Card(getRandomSuit(), 9))
+    val computerHand = List(Card(getRandomSuit(), 5), Card(getRandomSuit(), 8))
+
+    val result = CardUtils.playerWithHighCard(playerHand, computerHand)
+    assert(result.contains("Player"))
+  }
+
+  "Player Low Card" should "lose to Computer High card" in {
+    val playerHand = List(Card(getRandomSuit(), 4),Card(getRandomSuit(), 9))
+    val computerHand = List(Card(getRandomSuit(), 5), Card(getRandomSuit(), 13))
+
+    val result = CardUtils.playerWithHighCard(playerHand, computerHand)
+    assert(result.contains("Computer"))
+  }
+
+  "Three of a Kind" should "lose to a Full House" in {
+    val playerHand = ThreeOfAKind(List())
+    val computerHand = FullHouse(List())
+
+    val result = CardUtils.compareBestHands(playerHand, computerHand)
+    assert(result == -1)
+  }
+
   val randomStartingStraightValue = Random.between(2, 10)
 
-  //test full house with different combos to make sure choosing highest card
-  //e.g. 33 35666
-  //e.g. 22 44666
 }

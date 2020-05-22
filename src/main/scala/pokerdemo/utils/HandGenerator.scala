@@ -87,6 +87,19 @@ object HandGenerator {
   }
 
   def getStraightStartingFrom(cardValue: Int): List[Card] = {
+    cardValue match {
+      case 14 => return List(
+        Card(getRandomSuit(), 14),
+        Card(getRandomSuit(), 2),
+        Card(getRandomSuit(), 3),
+        Card(getRandomSuit(), 4),
+        Card(getRandomSuit(), 5),
+        Card(getRandomSuit(), 9),
+        Card(getRandomSuit(), 11),
+      )
+      case _ =>
+    }
+
     var straight = ArrayBuffer[Card]()
 
     cardValue to (cardValue + 4) foreach {
@@ -94,7 +107,7 @@ object HandGenerator {
     }
 
     val randomCard = Card(Suit.Hearts, 4)
-    val randomCard2 = Card(Suit.Diamonds, 10)
+    val randomCard2 = Card(Suit.Diamonds, 13)
     straight.toList ::: randomCard :: randomCard2 :: Nil
   }
 
@@ -127,6 +140,10 @@ object HandGenerator {
       Card(Suit.Hearts, val1),
       Card(Suit.Clubs, val1),
     )
+  }
+
+  def getTwoPair(): List[Card] = {
+    List(getTwoOfAKind(), getTwoOfAKind()).flatten
   }
 
   def getTwoOfAKind(): List[Card] = {

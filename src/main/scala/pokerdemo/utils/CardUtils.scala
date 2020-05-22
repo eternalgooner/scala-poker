@@ -71,7 +71,7 @@ object CardUtils {
 
     //######  check for royal flush  #######
     val flush = checkForFlush(sevenCards)
-    println(s"back from checkForFlush: $flush")
+//    println(s"back from checkForFlush: $flush")
     val isFlush = flush.nonEmpty
 
     val royalFlush = flush match {
@@ -83,7 +83,7 @@ object CardUtils {
 
     //#####  check for straight flush  #####
     val flushForStraight = checkForFlush(sevenCards)
-    println(s"back from checkForFlush: $flushForStraight")
+//    println(s"back from checkForFlush: $flushForStraight")
     val straightFlush = flushForStraight match {
       case x :: tail  => checkForStraightFlush(flushForStraight)
       case List()     => List()
@@ -93,7 +93,7 @@ object CardUtils {
 
     //#####  check for 4 of a kind  #####
     val fourOfAKindHand = checkForFourOfAKind(sevenCards)
-    println(s"back from checkForFourOfAKind: $fourOfAKindHand")
+//    println(s"back from checkForFourOfAKind: $fourOfAKindHand")
 
     if (fourOfAKindHand.nonEmpty){
       return FourOfAKind(fourOfAKindHand)
@@ -102,11 +102,11 @@ object CardUtils {
 
     //#####  check for full house  #####
     val fhTripsHand = checkForTrips(sevenCards)
-    println(s"back from fh trips: $fhTripsHand")
+//    println(s"back from fh trips: $fhTripsHand")
 
     if (fhTripsHand.nonEmpty){
       val fhPairHand = checkForPair(sevenCards)
-      println(s"back from fh pair: $fhPairHand")
+//      println(s"back from fh pair: $fhPairHand")
       if (fhPairHand.nonEmpty){
         return FullHouse(fhTripsHand ::: fhPairHand)
       }
@@ -116,7 +116,7 @@ object CardUtils {
     //#####  check for flush  #####
     if (isFlush){
       val flushHand = checkForFlush(sevenCards)
-      println(s"back from checkForFlush: $flushHand")
+//      println(s"back from checkForFlush: $flushHand")
       if (flushHand.nonEmpty) return Flush(flushHand)
     }
 
@@ -128,28 +128,31 @@ object CardUtils {
 
     //#####  check for 3 of a kind  #####
     val tripsHand = checkForTrips(sevenCards)
-    println(s"back from trips: $tripsHand")
+//    println(s"back from trips: $tripsHand")
     if (tripsHand.nonEmpty){
       return ThreeOfAKind(tripsHand)
     }
 
     //#####  check for 2 pair  #####
-
+    val twoPairHand = checkForTwoPair(sevenCards)
+    if (twoPairHand.nonEmpty){
+      return TwoPair(twoPairHand)
+    }
 
     //#####  check for 2 of a kind  #####
     val pairHand = checkForPair(sevenCards)
-    println(s"back from pair: $pairHand")
+//    println(s"back from pair: $pairHand")
     if (pairHand.nonEmpty){
       return Pair(pairHand)
     }
 
     //#####  high card  #####
-    println(s"returning High Card as no match: ${sevenCards.max}")
+//    println(s"returning High Card as no match: ${sevenCards.max}")
     HighCard(sevenCards.max :: Nil)
   }
 
   def checkForRoyalFlush(flush: List[Card]):List[Card] = {
-    println("\nchecking for Royal Flush")
+//    println("\nchecking for Royal Flush")
     val faceCards = for {
       card <- flush
       if (isFaceCard(card))
@@ -158,7 +161,7 @@ object CardUtils {
   }
 
   def checkForFlush(cards: List[Card]):List[Card] = {
-    println("\nchecking for Flush")
+//    println("\nchecking for Flush")
     val sevenSuits = cards.map(_.suit)
     val suitCountMap = sevenSuits.groupBy(identity).mapValues(_.size).toMap
     val suitFlush: Map[Suit, Int] = for {
@@ -166,8 +169,8 @@ object CardUtils {
       if entry._2 > 4
     } yield entry
 
-    println(suitCountMap)
-    println(suitFlush)
+//    println(suitCountMap)
+//    println(suitFlush)
     //println("this is what's going back:" + cards.filter(nonMatchingSuit(_, suitFlush)))
 
     suitFlush match {
@@ -177,12 +180,12 @@ object CardUtils {
   }
 
   def checkForStraightFlush(cards: List[Card]):List[Card] = {
-    println(s"\nchecking for Straight Flush with $cards")
+//    println(s"\nchecking for Straight Flush with $cards")
     val sortedDistinctValues = cards.map(_.value.id).distinct.sorted
-    println(s"sorted distinct values: $sortedDistinctValues")
+//    println(s"sorted distinct values: $sortedDistinctValues")
 
     val isStraight = sortedDistinctValues.sliding(2).count(a => a(0)+1 == a(1))
-    println(s"isStraight: $isStraight")
+//    println(s"isStraight: $isStraight")
 
     isStraight match {
       case count if count == 4  => cards
@@ -194,15 +197,24 @@ object CardUtils {
   //when 5,6,7,8 10,11,12 returns true
 
   def getPossibleStraightSubsets(xs: List[Int]):List[List[Int]] = {
-    val subset1 = xs.slice(0,5)
+/*    val subset1 = xs.slice(0,5)
     val subset2 = xs.slice(1,6)
-    val subset3 = xs.slice(2,7)
+    val subset3 = xs.slice(2,7)*/
 
-    List(subset1, subset2, subset3)
+    xs.sliding(5,1).toList
+
+    //List(subset1, subset2, subset3)
   }
 
-  def checkForStraight (cards: List[Card]):List[Card] = {
-    if (cards.size < 6) return List()
+  def aceLowStraight(cards: List[Card]): Boolean = {
+    val values: List[Int] = cards.map(_.value.id)
+//    values.forall(List(14,2,3,4,5).contains)
+    List(14,2,3,4,5).forall(values.contains)
+  }
+
+  def checkForStraight(cards: List[Card]):List[Card] = {
+    if (cards.size < 5) return List()
+    if (aceLowStraight(cards)) return cards
     val sortedDistinctValues = cards.map(_.value.id).distinct.sorted
     val subsets = getPossibleStraightSubsets(sortedDistinctValues)
 
@@ -220,11 +232,11 @@ object CardUtils {
   }
 
   def checkForFourOfAKind(cards: List[Card]):List[Card] = {
-    println(s"\nchecking for Four of a Kind with $cards")
+//    println(s"\nchecking for Four of a Kind with $cards")
     val sevenValues = cards.map(_.value.id)
-    println(s"values: $sevenValues")
+//    println(s"values: $sevenValues")
     val valueCountMap:Map[Int, Int] = sevenValues.groupBy(identity).mapValues(_.size).toMap
-    println(s"value map: $valueCountMap")
+//    println(s"value map: $valueCountMap")
 
     val fourOfAKind: Map[Int, Int] = for {
       entry <- valueCountMap
@@ -238,11 +250,11 @@ object CardUtils {
   }
 
   def checkForTrips(cards: List[Card]):List[Card] = {
-    println(s"\nchecking for Trips with $cards")
+//    println(s"\nchecking for Trips with $cards")
     val sevenValues = cards.map(_.value.id)
-    println(s"values: $sevenValues")
+//    println(s"values: $sevenValues")
     val valueCountMap:Map[Int, Int] = sevenValues.groupBy(identity).mapValues(_.size).toMap
-    println(s"value map: $valueCountMap")
+//    println(s"value map: $valueCountMap")
 
     val trips: Map[Int, Int] = for {
       entry <- valueCountMap
@@ -255,12 +267,25 @@ object CardUtils {
     }
   }
 
+  def checkForTwoPair(cards: List[Card]):List[Card] = {
+    val pair = checkForPair(cards)
+    if (pair.isEmpty) { return List()}
+    val pairValue = pair(0).value.id
+    val nextPairCheck = cards.filter(_.value.id != pairValue)
+    val secondPair = checkForPair(nextPairCheck)
+    if (secondPair.nonEmpty){
+      pair ::: secondPair
+    }else{
+      List()
+    }
+  }
+
   def checkForPair(cards: List[Card]):List[Card] = {
-    println(s"\nchecking for Pair with $cards")
+    //    println(s"\nchecking for Pair with $cards")
     val sevenValues = cards.map(_.value.id)
-    println(s"values: $sevenValues")
+    //    println(s"values: $sevenValues")
     val valueCountMap:Map[Int, Int] = sevenValues.groupBy(identity).mapValues(_.size).toMap
-    println(s"value map: $valueCountMap")
+    //    println(s"value map: $valueCountMap")
 
     val pair: Map[Int, Int] = for {
       entry <- valueCountMap
@@ -278,9 +303,28 @@ object CardUtils {
   }
 
   def nonMatchingSuit(card: Card, suitMap: Map[Suit, Int]): Boolean = {
-    println(s"suitMap: $suitMap")
+//    println(s"suitMap: $suitMap")
     val suit: Suit = getSuitFromMap(suitMap)
-    println(s"checking $card v $suit")
+//    println(s"checking $card v $suit")
     card.suit == suit
   }
+
+  def compareBestHands (playerHand: PokerHand, computerHand: PokerHand): Int = {
+    playerHand.value.compare(computerHand.value)
+  }
+
+  def playerWithHighCard(playerCards: List[Card], computerCards: List[Card]): String = {
+    val playerHighCard = playerCards.max
+    val computerHighCard = computerCards.max
+    if (playerHighCard > computerHighCard) {
+      s"Player with $playerHighCard"
+    }
+    else if (playerHighCard < computerHighCard) {
+      s"Computer with $computerHighCard"
+    }
+    else {
+      "Split Pot"
+    }
+  }
+
 }

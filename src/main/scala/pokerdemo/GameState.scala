@@ -1,7 +1,7 @@
 package pokerdemo
 
 import pokerdemo.utils.CardUtils.formatCardForDisplay
-import pokerdemo.model.{Card, CardDeck}
+import pokerdemo.model.{Card, CardDeck, PokerHand}
 import pokerdemo.utils.CardUtils
 
 import scala.util.Random
@@ -51,8 +51,8 @@ case class GameState(playerCards: List[Card], computerCards: List[Card], communi
     //show computer cards
     println(s"""Computer cards are:
             ------------------------------------
-            ${formatCardForDisplay(gameStateUpdate4.computerCards(0))}
-            ${formatCardForDisplay(gameStateUpdate4.computerCards(1))}
+            ***********
+            ***********
             ------------------------------------""")
 
     gameStateUpdate4
@@ -93,7 +93,7 @@ case class GameState(playerCards: List[Card], computerCards: List[Card], communi
 
     val gameStateAfterTurn = gameState.copy(communityCards = gameState.communityCards ::: turn :: Nil, cardDeck = cardDeckAfterTurn)
 
-    //display flop
+    //display turn
     println(s"""Cards after the turn are:
             ------------------------------------
             ${formatCardForDisplay(gameStateAfterTurn.communityCards(0))}
@@ -114,8 +114,8 @@ case class GameState(playerCards: List[Card], computerCards: List[Card], communi
 
     val gameStateAfterRiver = gameState.copy(communityCards = gameState.communityCards ::: river :: Nil, cardDeck = cardDeckAfterRiver)
 
-    //display flop
-    println(s"""Cards after the turn are:
+    //display river
+    println(s"""Cards after the river are:
             ------------------------------------
             ${formatCardForDisplay(gameStateAfterRiver.communityCards(0))}
             ${formatCardForDisplay(gameStateAfterRiver.communityCards(1))}
@@ -130,19 +130,26 @@ case class GameState(playerCards: List[Card], computerCards: List[Card], communi
   def calculateWinner(finalGameState: GameState):GameState = {
     //get players best 5 cards from 7
     val playerBestHand = CardUtils.getBestHand(List(finalGameState.playerCards, finalGameState.communityCards).flatten)
-    println(playerBestHand)
+//    println(playerBestHand)
 
     //get players best 5 cards from 7
     val computerBestHand = CardUtils.getBestHand(List(finalGameState.computerCards, finalGameState.communityCards).flatten)
-    println(computerBestHand)
+//    println(computerBestHand)
 
     //compare player best 5 v computer best 5
     print(
       s"""final hands were,
-         |player:   $playerBestHand
-         |computer: $computerBestHand""".stripMargin)
+         |player:   $playerBestHand from: ${finalGameState.playerCards}
+         |computer: $computerBestHand from ${finalGameState.computerCards}""".stripMargin)
 
+    val playerWins = CardUtils.compareBestHands(playerBestHand, computerBestHand)
+    playerWins match {
+      case 1  =>  println(s"\nplayer wins!")
+      case -1 =>  println(s"\ncomputer wins!")
+      case 0  =>  println(s"\nSame hand - winner with high card is: " + CardUtils.playerWithHighCard(finalGameState.playerCards, finalGameState.computerCards))
+    }
 
     finalGameState
   }
+
 }
