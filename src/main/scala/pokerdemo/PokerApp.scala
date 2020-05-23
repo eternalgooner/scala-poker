@@ -34,7 +34,7 @@ object PokerApp extends App {
     val gameStateAfterDeal = gameState.dealCardsToPlayers(gameState)
 
     println("\nhow much would you like to bet?")
-    val bet1 = readLine("bet amount?")
+    val bet1 = readLine("bet amount?\n")
 
     //deal the flop
     val gameStateAfterFlop = gameState.dealFlop(gameStateAfterDeal)

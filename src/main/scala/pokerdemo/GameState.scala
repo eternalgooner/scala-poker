@@ -19,27 +19,18 @@ case class GameState(playerCards: List[Card], computerCards: List[Card], communi
     val playerCard1 = CardUtils.getRandomCard(cardDeck.cards, Random)
     val cardDeck2 = CardUtils.updateCardDeck(playerCard1, cardDeck)
     val gameStateUpdate1 = gameState.copy(playerCards = List(playerCard1), cardDeck = cardDeck2)
-    //    println(s"\ngameStateUpdate after 1st card dealt: player cards: ${gameStateUpdate1.playerCards}, comp cards: ${gameStateUpdate1.computerCards}")
-    //    println(s"gameStateUpdate after 1st card dealt: used cards: ${gameStateUpdate1.cardDeck.usedCards}, remaining cards: ${gameStateUpdate1.cardDeck.remainingCards}")
 
     val computerCard1 = CardUtils.getRandomCard(cardDeck2.remainingCards, Random)
     val cardDeck3 = CardUtils.updateCardDeck(computerCard1, cardDeck2)
     val gameStateUpdate2 = gameStateUpdate1.copy(computerCards = List(computerCard1), cardDeck = cardDeck3)
-    //    println(s"\ngameStateUpdate after 2nd card dealt: player cards: ${gameStateUpdate2.playerCards}, comp cards: ${gameStateUpdate2.computerCards}")
-    //    println(s"gameStateUpdate after 2nd card dealt: used cards: ${gameStateUpdate2.cardDeck.usedCards}, remaining cards: ${gameStateUpdate2.cardDeck.remainingCards}")
 
     val playerCard2 = CardUtils.getRandomCard(cardDeck3.remainingCards, Random)
     val cardDeck4 = CardUtils.updateCardDeck(playerCard2, cardDeck3)
     val gameStateUpdate3 = gameStateUpdate2.copy(playerCards = List(playerCard1, playerCard2), cardDeck = cardDeck4)
-    //    println(s"\ngameStateUpdate after 3rd card dealt: player cards: ${gameStateUpdate3.playerCards}, comp cards: ${gameStateUpdate3.computerCards}")
-    //    println(s"gameStateUpdate after 3rd card dealt: used cards: ${gameStateUpdate3.cardDeck.usedCards}, remaining cards: ${gameStateUpdate3.cardDeck.remainingCards}")
 
     val computerCard2 = CardUtils.getRandomCard(cardDeck4.remainingCards, Random)
     val cardDeck5 = CardUtils.updateCardDeck(computerCard2, cardDeck4)
     val gameStateUpdate4 = gameStateUpdate3.copy(computerCards = List(computerCard1, computerCard2), cardDeck = cardDeck5)
-    //    println(s"\ngameStateUpdate after 4th card dealt: player cards: ${gameStateUpdate4.playerCards}, comp cards: ${gameStateUpdate4.computerCards}")
-    //    println(s"gameStateUpdate after 4th card dealt: used cards: ${gameStateUpdate4.cardDeck.usedCards}, remaining cards: ${gameStateUpdate4.cardDeck.remainingCards}")
-
 
     //show player cards
     println(s"""Your cards are:
@@ -130,11 +121,9 @@ case class GameState(playerCards: List[Card], computerCards: List[Card], communi
   def calculateWinner(finalGameState: GameState):GameState = {
     //get players best 5 cards from 7
     val playerBestHand = CardUtils.getBestHand(List(finalGameState.playerCards, finalGameState.communityCards).flatten)
-//    println(playerBestHand)
 
     //get players best 5 cards from 7
     val computerBestHand = CardUtils.getBestHand(List(finalGameState.computerCards, finalGameState.communityCards).flatten)
-//    println(computerBestHand)
 
     //compare player best 5 v computer best 5
     print(
